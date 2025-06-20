@@ -8,7 +8,7 @@ exports.createShelter = async (req, res) => {
         if (!user){
             return res.status(404).json({message:"User not found! Please try again!"})
         }
-        if (user.ShelterOwnerProfile == null){
+        if (!user.ShelterOwnerProfile){
             return res.status(400).json({message:"You can't create a shelter unless you are an owner!"})
         }
 
