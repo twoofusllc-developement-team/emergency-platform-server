@@ -44,8 +44,8 @@ exports.createShelter = async (req, res) => {
         });
 
         await newShelter.save()
-
-        return res.status(200).json({message:"Shelter created successfully!"})
+        // make status pending verification
+        return res.status(200).json({message:"Pending Verification!"})
 
     }catch(err){
         return res.status(500).json({message:err.message})
