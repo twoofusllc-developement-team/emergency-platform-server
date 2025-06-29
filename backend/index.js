@@ -1,8 +1,9 @@
 const express = require('express')
 const app = express()
-const DB = require('./database').connectDB()
+const DB = require("./database").connectDB;
 
-DB()
+require('dotenv').config();
+DB();
 app.use(express.json())
 
 app.listen(3000, ()=>{
