@@ -1,6 +1,6 @@
-const express = require('express')
-const app = express()
-const DB = require('./database').connectDB()
+const express = require('express');
+const app = express();
+const DB = require('./database').connectDB;
 
 DB()
 app.use(express.json())

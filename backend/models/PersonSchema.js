@@ -43,6 +43,23 @@ const PersonSchema = new Schema({
     type: Date
   }
   });
+  // PersonSchema.pre(save(),async function (next) {
+  //   try {
+  //     if (!this.isModified("passwordHash")) {
+  //       return next() ;
+  //     }
+  //     this.p
+  //   } catch (error) {
+  //     console.log(error);
+      
+  //   }
+  // });
+  PersonSchema.methods.checkPassword = async (
+    candidatePassword  // enter by user
+    , userPassword// save in db
+     )=> {
+    return await bcrypt.compare(candidatePassword,userPassword);
+};
   const Person = mongoose.model('Person', PersonSchema);
 
 module.exports = Person;

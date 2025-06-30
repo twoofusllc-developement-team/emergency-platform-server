@@ -1,5 +1,36 @@
 const Person  = require("../models/PersonSchema");
 const bcrypt = require('bcrypt');
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
+
+const signToken = (user) => {
+
+    return jwt.sign(
+        {
+            id : user._id , name : user.name 
+        },process.env.JWT_SECRET 
+        ,{expiresIn : process.env.JWT_Expires || "15m"}
+    );
+} ;
+
+const createsendToken = (user , statusCode , message , res ) => {
+    const token = signToken(user);
+    const sanitizedUser = {
+        id : user._id ,
+        name : user.email
+    }
+    res.status(statusCode).json({
+        "status" : "success",
+        "token" : token ,
+        
+        "data" : {user :  sanitizedUser ,
+            "message" : message ,
+        }
+    });
+};
+
+
+
 // const allowedRoles = ["Shelter Owner","requester","admin"];
 const roleProfileMap = {
   "Shelter Owner" : "shelterOwnerProfile" ,
@@ -10,9 +41,13 @@ const validateData = (email, passwordHash, PhoneNumber, Address) => {
   // const { email, passwordHash, PhoneNumber, role, Address, RequesterProfile } = data;
 
   if (
-    !email || !/^\S+@\S+\.\S+$/.test(email) ||
+    !email || 
+    // !/^\S+@\S+\.\S+$/.test(email) 
+    validator.isEmail(email)||
     !passwordHash ||
-    !PhoneNumber || !/^\d{10}$/.test(PhoneNumber) ||
+    !PhoneNumber || 
+    // !/^\d{10}$/.test(PhoneNumber) 
+    validator.isMobilePhone(PhoneNumber)||
     // role !== "requester" ||
     !Address || !Address[0]?.street || !Address[0]?.AddressName // ||
     // !RequesterProfile || !RequesterProfile.Requester || !RequesterProfile.Documents
@@ -67,8 +102,9 @@ exports.createPerson = async (req, res) => {
          Address,
          profileData,
           };
-        const newperson = new Person(PersonData);
-         await newperson.save();
+          const newperson = await Person.create(PersonData);
+        // const newperson = new Person(PersonData);
+        //  await newperson.save();
          return successResponse(PersonData, 201, "Person registered successfully.", res);
          }
     if (!validateData(req.body)) {
@@ -91,9 +127,27 @@ exports.createPerson = async (req, res) => {
     
   } catch (error) {
     console.log(error);
-    
+     return failedResponse(500, error.message, res);
   }
      
+};
+exports.login = async (req,res) => {
+try {
+  const {email , passwordHash} = req.body ;
+  const person = await Person.findOne({email});
+  if (!person || ! (await Person.checkPassword(
+    passwordHash , person.passwordHash)
+  )) {
+    return failedResponse(401, "Invalid credentials", res);
+  }
+  createsendToken(person,200,"you are logged successfully" , res)
+  // return successResponse(person, 201, "logged in successfully.", res);
+} catch (error) {
+  console.error(error);
+  return failedResponse(500, error.message, res);
+}
+
+  
 };
 exports.updatePerson = async (req,res) => {
    const { id } = req.params;
@@ -137,3 +191,39 @@ exports.updatePerson = async (req,res) => {
     
   }
 };
+
+exports.protect = async (req , res , next) => {
+    try {
+        let token ;
+        const authHeader = req.headers.authorization ;
+        if (authHeader?.startWith("Bearer ")) {
+            authHeader.split(" ")[1];
+        }
+        if (!token) {
+            res.status(401).json({"message" : "not authonticated"});
+        }
+        // to verifie the token 
+        const decoded = jwt.verify(token,process.env.JWT_SECRET);
+        // chek if user exist 
+        const currentPerson = await Person.findById(decoded.id);
+        if(!currentPerson){
+             res.status(401).json({"message" : "user not found"});
+        }
+        // verify password not changed after token is send
+
+        // if token is valide
+        req.person = currentPerson;
+        next();
+
+    } catch (error) {
+        if (error.name = "jsonWebTokenError") {
+            res.status(401).json({"message" : "invalaid token"});
+        }
+        if (error.name = "tokenExpiredError") {
+            res.status(401).json({"message" : "token expired , you should login again"});
+        }
+        console.error(error);
+        res.status(500).json({"message" : "faile"});
+    }
+};
+

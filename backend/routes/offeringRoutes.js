@@ -1,4 +1,5 @@
 const express = require('express');
 const router = express.Router();
 const OfferingController = require('../controllers/OfferingControllers');
-router.post('/createOffering', OfferingController.createOffer);
+const authController = require('./../controllers/PersonControllers');
+router.post('/createOffering',authController.protect ,OfferingController.createOffer);

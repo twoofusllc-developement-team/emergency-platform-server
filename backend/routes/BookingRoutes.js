@@ -1,5 +1,5 @@
 const express = require('express');
 const router = express.Router();
 const BookingController = require('../controllers/BookingControllers');
-
-router.post('/createBooking', BookingController.createBooking);
+const authController = require('./../controllers/PersonControllers');
+router.post('/createBooking', authController.protect,BookingController.createBooking);
