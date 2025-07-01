@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt");
  const validator = require('validator');
+ const addressSchema = require("./addressSchema");
+ const requesterProfileSchema =require("./requesterProfileSchema");
+ const shelterOwnerProfileSchema = require("./shelterOwnerProfileSchema");
 const PersonSchema = new Schema({
     "email" : {
         type : String ,

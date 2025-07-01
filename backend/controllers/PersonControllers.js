@@ -75,6 +75,7 @@ const failedResponse = (statusCode, message, res) => {
 
 exports.createPerson = async (req, res) => {
   try {
+    console.log(req.body);
     const { email, passwordHash, PhoneNumber, role, Address, RequesterProfile ,shelterOwnerProfile } = req.body;
     const existingPerson = await Person.findOne({ email });
     if (existingPerson) {
