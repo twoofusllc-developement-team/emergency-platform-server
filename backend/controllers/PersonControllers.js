@@ -33,29 +33,23 @@ const createsendToken = (user , statusCode , message , res ) => {
 
 // const allowedRoles = ["Shelter Owner","requester","admin"];
 const roleProfileMap = {
-  "Shelter Owner" : "shelterOwnerProfile" ,
+  "ShelterOwner" : "shelterOwnerProfile" ,
    "requester" : "RequesterProfile",
    "admin" : ""
 }
 const validateData = (email, passwordHash, PhoneNumber, Address) => {
-  // const { email, passwordHash, PhoneNumber, role, Address, RequesterProfile } = data;
-
   if (
     !email || 
-    // !/^\S+@\S+\.\S+$/.test(email) 
-    validator.isEmail(email)||
+    !validator.isEmail(email) ||
     !passwordHash ||
     !PhoneNumber || 
-    // !/^\d{10}$/.test(PhoneNumber) 
-    validator.isMobilePhone(PhoneNumber)||
-    // role !== "requester" ||
-    !Address || !Address[0]?.street || !Address[0]?.AddressName // ||
-    // !RequesterProfile || !RequesterProfile.Requester || !RequesterProfile.Documents
+    !Address || !Address.addressName || !Address.street
   ) {
     return false;
   }
   return true;
 };
+
 const successResponse = (data, statusCode, message, res) => {
   res.status(statusCode).json({
     success: true,
@@ -80,57 +74,92 @@ exports.createPerson = async (req, res) => {
     if (existingPerson) {
       return failedResponse(409, "Person with this email already exists.", res);
     }
-    if (!role) {
+    if (!role || !(role in roleProfileMap)) {
        return failedResponse(409, "role not exist", res);
     }
-    profileKey = roleProfileMap[role];
-    if (profileKey) { // if i don t have  => role = admin => i don t need test profile existing
-      profileData = req.body[profileKey] ;
-      if(!profileData){
-        return failedResponse(409, "missing profile data", res);
+    // profileKey = roleProfileMap[role];
+    // if (profileKey) { // if i don t have  => role = admin => i don t need test profile existing
+    //   profileData = req.body[profileKey] ;
+    //   if(!profileData){
+    //     return failedResponse(409, "missing profile data", res);
+    //   }
+
+    //   if (!validateData(req.body.email, req.body.passwordHash, req.body.PhoneNumber, req.body.Address)) {
+    //     return failedResponse(400, "Invalid or missing data.", res);
+    //   }
+    //   const saltRounds = 10;
+    //   const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
+    //   const PersonData = {
+    //       email,
+    //       passwordHash: hashedPassword,
+    //       PhoneNumber,
+    //       role,
+    //       Address,
+    //       profileData,
+    //       };
+    //       const newperson = await Person.create(PersonData);
+    //     // const newperson = new Person(PersonData);
+    //     //  await newperson.save();
+    //       return successResponse(PersonData, 201, "Person registered successfully.", res);
+    //      }
+    //     if (!validateData(req.body.email, req.body.passwordHash, req.body.PhoneNumber, req.body.Address)) {
+    //       return failedResponse(400, "Invalid or missing data.", res);
+    //     }
+    //     const saltRounds = 10;
+    //     const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
+    //     const PersonData = {
+    //     email,
+    //     passwordHash: hashedPassword,
+    //     PhoneNumber,
+    //     role,
+    //     Address,
+    
+    // };
+    if (!validateData(req.body.email, req.body.passwordHash, req.body.PhoneNumber, req.body.Address)) {
+          return failedResponse(400, "Invalid or missing data.", res);
       }
-      if (!validateData(req.body)) {
-      return failedResponse(400, "Invalid or missing data.", res);
-      }
-       const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
-       const PersonData = {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
+      let PersonData
+      if (role == "admin"){
+         PersonData = {
           email,
           passwordHash: hashedPassword,
           PhoneNumber,
-         role,
-         Address,
-         profileData,
-          };
-          const newperson = await Person.create(PersonData);
-        // const newperson = new Person(PersonData);
-        //  await newperson.save();
-         return successResponse(PersonData, 201, "Person registered successfully.", res);
-         }
-    if (!validateData(req.body)) {
-  return failedResponse(400, "Invalid or missing data.", res);
-}
-   const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
-  const PersonData = {
-    email,
-    passwordHash: hashedPassword,
-    PhoneNumber,
-    role,
-    Address,
-  
-  };
-  const newperson = new Person(PersonData);
+          role,
+          Address,
+        }
+    }else if (role == "ShelterOwner"){
+         PersonData = {
+          email,
+          passwordHash: hashedPassword,
+          PhoneNumber,
+          role,
+          Address,
+          shelterOwnerProfile:req.body.shelterOwnerProfile
+        }
+    }else if (role == "requester"){
+         PersonData = {
+          email,
+          passwordHash: hashedPassword,
+          PhoneNumber,
+          role,
+          Address,
+          requesterProfile:req.body.requesterProfile
+        }
+    }
+    console.log(PersonData)
+    const newperson = new Person(PersonData);
     await newperson.save();
-  return successResponse(PersonData, 201, "Person registered successfully.", res);
+    return successResponse(PersonData, 201, "Person registered successfully.", res);
 
     
   } catch (error) {
     console.log(error);
      return failedResponse(500, error.message, res);
-  }
-     
+  }     
 };
+
 exports.login = async (req,res) => {
 try {
   const {email , passwordHash} = req.body ;
@@ -158,13 +187,13 @@ exports.updatePerson = async (req,res) => {
   // if (updateData.email && !/^\S+@\S+\.\S+$/.test(updateData.email)) {
   //   return failedResponse(400, "Invalid email format", res);
   // }
-  if (!updateData.firstName) {
-    return failedResponse(400, "Invalid first name", res);
-  }
-  if(!updateData.lastName){
-    return failedResponse(400, "Invalid last name", res);
-  }
-  if (!validateData(updateData.email,updateData.hashedPassword,updateData.PhoneNumber,updateData.Address)) {
+  // if (!updateData.firstName) {
+  //   return failedResponse(400, "Invalid first name", res);
+  // }
+  // if(!updateData.lastName){
+  //   return failedResponse(400, "Invalid last name", res);
+  // }
+  if (!validateData(updateData.email,updateData.passwordHash,updateData.PhoneNumber,updateData.Address)) {
     return failedResponse(400, "Invalid data", res);
   }
   try {
