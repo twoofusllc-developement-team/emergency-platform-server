@@ -69,108 +69,56 @@ const failedResponse = (statusCode, message, res) => {
 
 exports.createPerson = async (req, res) => {
   try {
-    const { email, passwordHash, PhoneNumber, role, Address, RequesterProfile ,shelterOwnerProfile } = req.body;
-    const existingPerson = await Person.findOne({ email });
-    if (existingPerson) {
-      return failedResponse(409, "Person with this email already exists.", res);
-    }
-    if (!role || !(role in roleProfileMap)) {
-       return failedResponse(409, "role not exist", res);
-    }
-    // profileKey = roleProfileMap[role];
-    // if (profileKey) { // if i don t have  => role = admin => i don t need test profile existing
-    //   profileData = req.body[profileKey] ;
-    //   if(!profileData){
-    //     return failedResponse(409, "missing profile data", res);
-    //   }
-
-    //   if (!validateData(req.body.email, req.body.passwordHash, req.body.PhoneNumber, req.body.Address)) {
-    //     return failedResponse(400, "Invalid or missing data.", res);
-    //   }
-    //   const saltRounds = 10;
-    //   const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
-    //   const PersonData = {
-    //       email,
-    //       passwordHash: hashedPassword,
-    //       PhoneNumber,
-    //       role,
-    //       Address,
-    //       profileData,
-    //       };
-    //       const newperson = await Person.create(PersonData);
-    //     // const newperson = new Person(PersonData);
-    //     //  await newperson.save();
-    //       return successResponse(PersonData, 201, "Person registered successfully.", res);
-    //      }
-    //     if (!validateData(req.body.email, req.body.passwordHash, req.body.PhoneNumber, req.body.Address)) {
-    //       return failedResponse(400, "Invalid or missing data.", res);
-    //     }
-    //     const saltRounds = 10;
-    //     const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
-    //     const PersonData = {
-    //     email,
-    //     passwordHash: hashedPassword,
-    //     PhoneNumber,
-    //     role,
-    //     Address,
+      const { email, password, PhoneNumber, role, Address, RequesterProfile, shelterOwnerProfile} = req.body;
     
-    // };
-    if (!validateData(req.body.email, req.body.passwordHash, req.body.PhoneNumber, req.body.Address)) {
-          return failedResponse(400, "Invalid or missing data.", res);
-      }
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
-      let PersonData
-      if (role == "admin"){
-         PersonData = {
-          email,
-          passwordHash: hashedPassword,
-          PhoneNumber,
-          role,
-          Address,
-        }
-    }else if (role == "ShelterOwner"){
-         PersonData = {
-          email,
-          passwordHash: hashedPassword,
-          PhoneNumber,
-          role,
-          Address,
-          shelterOwnerProfile:req.body.shelterOwnerProfile
-        }
-    }else if (role == "requester"){
-         PersonData = {
-          email,
-          passwordHash: hashedPassword,
-          PhoneNumber,
-          role,
-          Address,
-          requesterProfile:req.body.requesterProfile
-        }
-    }
-    console.log(PersonData)
-    const newperson = new Person(PersonData);
-    await newperson.save();
-    return successResponse(PersonData, 201, "Person registered successfully.", res);
+      //step1: basic validation
+      if(!email || !password) return res.status(400).json({error:'email and password are required!'})
+      if(!validator.isEmail(email)) return res.status(400).json({error: 'invalid email format.'})
+      if(!validator.isMobilePhone(PhoneNumber)) return res.status(400).json({error: 'phone number format is invalid!'})
 
-    
-  } catch (error) {
-    console.log(error);
-     return failedResponse(500, error.message, res);
-  }     
+      //step2: check if found in db or not
+      const existing = await Person.findOne({email:email})
+      if(existing) return res.status(400).json({error: 'email already exists'})
+        
+      //step3: validate role
+      if (!(role in roleProfileMap)) return res.status(400).json({error: 'role is not valid'})
+
+      //step4: hashing pass
+      const passwordHash = await bcrypt.hash(password, 12);
+      const data = {email, passwordHash, PhoneNumber, role, Address, RequesterProfile, shelterOwnerProfile }
+
+      //step7: save to db
+      const newPerson = new Person(personData);
+      await newPerson.save();
+
+      //step8: return safe data
+      return res.status(201).json({
+        message:'account created successfuly!',
+        account:{
+          email: newPerson.email,
+          PhoneNumber: newPerson.PhoneNumber,
+          shelterOwnerProfile: newPerson.shelterOwnerProfile
+        }
+      })
+
+    }catch (error) {
+      console.log(error);
+      return failedResponse(500, error.message, res);
+    }     
 };
 
 exports.login = async (req,res) => {
 try {
-  const {email , passwordHash} = req.body ;
+  const {email , password} = req.body ;
   const person = await Person.findOne({email});
+  const hashedPass = await bcrypt.hash(password, 12);
   if (!person || ! (await Person.checkPassword(
-    passwordHash , person.passwordHash)
+    hashedPass , person.passwordHash)
   )) {
     return failedResponse(401, "Invalid credentials", res);
   }
   createsendToken(person,200,"you are logged successfully" , res)
-  // return successResponse(person, 201, "logged in successfully.", res);
+  return successResponse(person, 201, "logged in successfully.", res);
 } catch (error) {
   console.error(error);
   return failedResponse(500, error.message, res);
@@ -179,20 +127,11 @@ try {
   
 };
 exports.updatePerson = async (req,res) => {
-   const { id } = req.params;
+  const { id } = req.params;
   const updateData = req.body;
   if(!id){
      return failedResponse(400, "Invalid id", res);
   } 
-  // if (updateData.email && !/^\S+@\S+\.\S+$/.test(updateData.email)) {
-  //   return failedResponse(400, "Invalid email format", res);
-  // }
-  // if (!updateData.firstName) {
-  //   return failedResponse(400, "Invalid first name", res);
-  // }
-  // if(!updateData.lastName){
-  //   return failedResponse(400, "Invalid last name", res);
-  // }
   if (!validateData(updateData.email,updateData.passwordHash,updateData.PhoneNumber,updateData.Address)) {
     return failedResponse(400, "Invalid data", res);
   }
@@ -204,12 +143,9 @@ exports.updatePerson = async (req,res) => {
       return failedResponse(404, "Person not found", res);}
        const responseData = {
       id: updatedPerson._id,
-      firstName: updatedPerson.firstName,
-      lastName: updatedPerson.lastName,
       email: updatedPerson.email,
       phone: updatedPerson.phone,
       address: updatedPerson.address,
-      isActive: updatedPerson.isActive,
       updatedAt: updatedPerson.updatedAt
     };
 
@@ -221,38 +157,51 @@ exports.updatePerson = async (req,res) => {
   }
 };
 
-exports.protect = async (req , res , next) => {
+exports.protect = async (req, res, next) => {
     try {
-        let token ;
-        const authHeader = req.headers.authorization ;
-        if (authHeader?.startWith("Bearer ")) {
-            authHeader.split(" ")[1];
-        }
-        if (!token) {
-            res.status(401).json({"message" : "not authonticated"});
-        }
-        // to verifie the token 
-        const decoded = jwt.verify(token,process.env.JWT_SECRET);
-        // chek if user exist 
-        const currentPerson = await Person.findById(decoded.id);
-        if(!currentPerson){
-             res.status(401).json({"message" : "user not found"});
-        }
-        // verify password not changed after token is send
+        let token;
+        const authHeader = req.headers.authorization;
 
-        // if token is valide
+        if (authHeader?.startsWith("Bearer ")) {
+            token = authHeader.split(" ")[1];
+        }
+
+        if (!token) {
+            return res.status(401).json({ message: "Not authenticated" });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Check if user exists
+        const currentPerson = await Person.findById(decoded.id);
+        if (!currentPerson) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        // CHECK if the password was changed after the token was issued
+        if (currentPerson.passwordChangedAt) {
+            const changedTimestamp = parseInt(currentPerson.passwordChangedAt.getTime() / 1000, 10);
+            if (decoded.iat < changedTimestamp) {
+                return res.status(401).json({
+                    message: "Password was changed recently. Please log in again."
+                });
+            }
+        }
+
+        // Attach user to request
         req.person = currentPerson;
         next();
 
     } catch (error) {
-        if (error.name = "jsonWebTokenError") {
-            res.status(401).json({"message" : "invalaid token"});
+        if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({ message: "Invalid token" });
         }
-        if (error.name = "tokenExpiredError") {
-            res.status(401).json({"message" : "token expired , you should login again"});
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({ message: "Token expired, please log in again" });
         }
         console.error(error);
-        res.status(500).json({"message" : "faile"});
+        res.status(500).json({ message: "Authentication failed" });
     }
 };
 

@@ -1,22 +1,7 @@
 const Booking = require("../models/BookingSchema");
 const Person = require("../models/PersonSchema");
-    const validTypes = ['shelter', 'blood', 'mobility'];
-const successResponse = (data, statusCode, message, res) => {
-  res.status(statusCode).json({
-    success: true,
-    message: message,
-    data: data,
-  });
-};
+const validTypes = ['shelter', 'blood', 'mobility'];
 
-
-const failedResponse = (statusCode, message, res) => {
-  res.status(statusCode).json({
-    success: false,
-    message: message,
-    data: null,
-  });
-};
 exports.createOffer = (req , res) =>{
   try {
     const { Type } = req.body;
@@ -33,7 +18,6 @@ exports.createOffer = (req , res) =>{
   } catch (error) {
     console.error(error);
      res.status(500).json({ error: 'Server error' });
-    
   }
 
 
