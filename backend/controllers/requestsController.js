@@ -1,4 +1,4 @@
-const Shelter = require('../models/facilities')
+const Shelter = require('../models/facilityModel')
 const Person = require('../models/PersonSchema')
 
 exports.createRequest = async (req, res) => {
