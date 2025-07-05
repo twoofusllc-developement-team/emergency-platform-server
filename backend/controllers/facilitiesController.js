@@ -38,11 +38,12 @@ exports.createShelter = async (req, res) => {
             isShared,
             isAvailable,
             AvailableFrom,
-            AvailableTo
+            AvailableTo,
+            status:"pending"
         });
 
         await newShelter.save()
-        // make status pending verification
+        
         return res.status(200).json({message:"Pending Verification!" + newShelter})
 
     }catch(err){

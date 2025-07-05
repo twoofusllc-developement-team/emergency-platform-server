@@ -63,6 +63,10 @@ const facilitySchema = new mongoose.Schema({
     AvailableTo: {
       type: Date
     }
+  },
+  status:{
+    type:String,
+    enum:["pending", "verified"]
   }
 }, {
   timestamps: true 
