@@ -1,0 +1,32 @@
+.custom-navbar {
+  background-color: #144D29;
+  padding: 15px 0;
+}
+
+.nav-link-custom {
+  color: #EED5AB !important;
+  font-weight: 500;
+  padding: 8px 20px !important;
+  margin: 0 5px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.nav-link-custom:hover {
+  background-color: #EED5AB !important;
+  color: #144D29 !important;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 992px) {
+  .nav-link-custom {
+    margin: 5px 0;
+    display: block;
+    text-align: left;
+  }
+  
+  .custom-navbar .nav {
+    flex-direction: column;
+  }
+}
