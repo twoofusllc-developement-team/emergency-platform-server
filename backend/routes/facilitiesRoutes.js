@@ -4,7 +4,7 @@ const facilitiesController = require('../controllers/facilitiesController')
 const authController = require('../controllers/PersonControllers')
 
 // Create operations
-router.post('/createShelter', 
+router.post('/facilities', 
     authController.protect, 
     facilitiesController.validateShelterOwnerRole,
     facilitiesController.validateFacilityCapacity,

@@ -88,7 +88,7 @@ exports.createPerson = async (req, res) => {
       const data = {email, passwordHash, PhoneNumber, role, Address, RequesterProfile, shelterOwnerProfile }
 
       //step7: save to db
-      const newPerson = new Person(personData);
+      const newPerson = new Person(data);
       await newPerson.save();
 
       //step8: return safe data
@@ -111,14 +111,10 @@ exports.login = async (req,res) => {
 try {
   const {email , password} = req.body ;
   const person = await Person.findOne({email});
-  const hashedPass = await bcrypt.hash(password, 12);
-  if (!person || ! (await Person.checkPassword(
-    hashedPass , person.passwordHash)
-  )) {
+  if (!person || !(await person.checkPassword(password, person.passwordHash))) {
     return failedResponse(401, "Invalid credentials", res);
   }
   createsendToken(person,200,"you are logged successfully" , res)
-  return successResponse(person, 201, "logged in successfully.", res);
 } catch (error) {
   console.error(error);
   return failedResponse(500, error.message, res);
