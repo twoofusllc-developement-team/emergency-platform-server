@@ -6,7 +6,7 @@ const facilitySchema = new mongoose.Schema({
     required: true
   },
   facilityType: {
-    type: [String],
+    type: String,
     required: true,
     enum: ["Hospital", "NGO", "Shelter"]
   },

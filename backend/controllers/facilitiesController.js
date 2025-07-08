@@ -105,16 +105,11 @@ function validateFacility(data) {
   
     // facilityType: required array of allowed strings
     const allowedTypes = ["Hospital", "NGO", "Shelter"];
-    if (!Array.isArray(data.facilityType) || data.facilityType.length === 0) {
-      errors.push('facilityType is required and must be a non-empty array.');
-    } else {
-      data.facilityType.forEach(type => {
-        if (!allowedTypes.includes(type)) {
-          errors.push(`Invalid facilityType value: ${type}. Allowed: ${allowedTypes.join(', ')}`);
-        }
-      });
-    }
-  
+
+    if (!allowedTypes.includes(data.facilityType)) {
+      errors.push('facilityType is required and must be in the valid types');
+    } 
+
     // FacilityDescription: optional string
     if (data.FacilityDescription && typeof data.FacilityDescription !== 'string') {
       errors.push('FacilityDescription must be a string.');

@@ -15,8 +15,8 @@ const requestSchema = new mongoose.Schema({
     type: String
   },
   RequestShelter: {
-    OfferingID: {
-      type: mongoose.Schema.Types.ObjectId
+    shelterID: {
+      type: mongoose.Schema.Facility.ObjectId
     }
   },
   RequestBlood: {

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const PersonController = require('../controllers/PersonControllers');
 
-router.post('/createPerson', PersonController.createPerson);
+router.post('/signup', PersonController.signup);
 router.put('/updatePerson/:id',PersonController.protect, PersonController.updatePerson);
 router.post('/login', PersonController.login)
 

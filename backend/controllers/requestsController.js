@@ -1,47 +1,42 @@
-const Shelter = require('../models/facilityModel')
+const Facility = require('../models/facilityModel')
 const Person = require('../models/PersonSchema')
 
 exports.createRequest = async (req, res) => {
     try{
-        
+        const facilityID = req.params.id
         const {
-            RequesterID,
             RequestType,
             RequestName
         } = req.body;
 
-        const requester = await Person.findById(RequesterID)
+        const requester = req.person
         if (!requester){
             return res.status(404).json({message:"Requester not found!"})
         }
 
         if (RequestType === "Request Shelter") {
-            if (!RequestShelter || !RequestShelter.OfferingID) {
-                return res.status(400).json({ message: "OfferingID is required for 'Request Shelter'." });
-            }
-
             if (requester.ShelterOwnerProfile) {
                 return res.status(400).json({ message: "Shelter owners cannot request shelters." });
             }
 
-            const shelter =  req.body["RequestShelter"]
-            const found = await Facility.findById(RequestShelter.OfferingID)
-            if(!found){
+            const shelter = await Facility.findById(facilityID)
+            if(!shelter){
                 return res.status(404).json({message: "Shelter is not found!"})
             }
-            if (!shelter.isAvailable){
+            if (!shelter.ShelterProfile.isAvailable){
                 return res.status(400).json({message: "Shelter is already been booked by someone else!"})
             }
-            const now= timeStamp()
+            const now= Date.now()
             if (now < shelter.AvailableFrom || now > shelter.AvailableTo){
                 return res.status(400).json({message: "Shelter is not available in such time!"})
             }
 
             const newRequest = new Request({
-                RequesterID,
                 RequestType,
                 RequestName,
-                RequestShelter:shelter
+                RequestShelter:{
+                    shelterID:facilityID
+                }
             });
 
             await newRequest.save();

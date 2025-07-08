@@ -67,7 +67,7 @@ const failedResponse = (statusCode, message, res) => {
   });
 };
 
-exports.createPerson = async (req, res) => {
+exports.signup = async (req, res) => {
   try {
       const { email, password, PhoneNumber, role, Address, RequesterProfile, shelterOwnerProfile} = req.body;
     
