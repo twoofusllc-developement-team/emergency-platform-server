@@ -220,6 +220,21 @@ exports.createShelter = async (req, res) => {
             AvailableTo
         } = req.body;
 
+        // Set default available times if not provided
+        const now = new Date();
+        const defaultAvailableFrom = now;
+        const defaultAvailableTo = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+        const shelterProfile = {
+            ShelterProperties,
+            isFurnished,
+            capacity,
+            isShared,
+            isAvailable,
+            AvailableFrom: AvailableFrom ? new Date(AvailableFrom) : defaultAvailableFrom,
+            AvailableTo: AvailableTo ? new Date(AvailableTo) : defaultAvailableTo
+        };
+
         // Prepare data for validation
         const facilityData = {
             FacilityName,
@@ -227,15 +242,7 @@ exports.createShelter = async (req, res) => {
             FacilityDescription,
             FacilityImages,
             FacilityAddress,
-            ShelterProfile: {
-                ShelterProperties,
-                isFurnished,
-                capacity,
-                isShared,
-                isAvailable,
-                AvailableFrom,
-                AvailableTo
-            }
+            ShelterProfile: shelterProfile
         };
 
         // Validate the facility data
@@ -253,13 +260,7 @@ exports.createShelter = async (req, res) => {
             FacilityDescription,
             FacilityImages,
             FacilityAddress,
-            ShelterProperties,
-            isFurnished,
-            capacity,
-            isShared,
-            isAvailable,
-            AvailableFrom,
-            AvailableTo,
+            ShelterProfile: shelterProfile,
             status: "pending",
             ownerId: user._id // Add owner reference
         });

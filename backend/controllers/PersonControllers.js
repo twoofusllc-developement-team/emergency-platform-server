@@ -201,3 +201,18 @@ exports.protect = async (req, res, next) => {
     }
 };
 
+// Middleware to check if the user is an admin
+exports.isAdmin = (req, res, next) => {
+  if (!req.person || req.person.role !== 'admin') {
+    return res.status(403).json({ message: 'Access denied: Admins only.' });
+  }
+  next();
+};
+
+// Middleware to check if the user is an admin or owner
+exports.isOwner = (req, res, next) => {
+  if (!req.person || req.person.role !== 'admin' || req.person.role !== 'ShelterOwner') {
+    return res.status(403).json({ message: 'Access denied: Admins and Shelter Owner only.' });
+  }
+  next();
+};
