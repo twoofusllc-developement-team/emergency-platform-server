@@ -17,7 +17,9 @@ const createsendToken = (user , statusCode , message , res ) => {
     const token = signToken(user);
     const sanitizedUser = {
         id : user._id ,
-        name : user.email
+        email : user.email,
+        role: user.role
+
     }
     res.status(statusCode).json({
         "status" : "success",

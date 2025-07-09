@@ -1,10 +1,17 @@
 const express = require('express')
 const app = express()
+const cors = require('cors');
 const DB = require("./database").connectDB;
 
 require('dotenv').config();
 DB();
 app.use(express.json())
+
+// Allow CORS for localhost:3500
+app.use(cors({
+  origin: 'http://localhost:3500',
+  credentials: true
+}));
 
 const personRoutes = require('./routes/PersonRoutes')
 const facilityRoutes = require('./routes/facilitiesRoutes');

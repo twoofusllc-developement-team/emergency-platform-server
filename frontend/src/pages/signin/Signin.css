@@ -1,0 +1,263 @@
+/* Signin.css */
+
+.signin-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+  }
+  
+  .signin-container .row {
+    flex: 1;
+    align-items: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .signin-card {
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+  }
+  
+  .custom-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-card-header {
+    background: transparent;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .custom-card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.5rem;
+  }
+  
+  .custom-card-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+  }
+  
+  .custom-card-content {
+    padding: 1.5rem;
+  }
+  
+  .custom-card-footer {
+    background: transparent;
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    text-align: center;
+  }
+  
+  .custom-input {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .custom-input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+  }
+  
+  .custom-input.error {
+    border-color: #dc3545;
+  }
+  
+  .custom-input.error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+  
+  .custom-label {
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .custom-button {
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .custom-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .icon {
+    width: 1rem;
+    height: 1rem;
+    color: #6c757d;
+  }
+  
+  .password-input-container {
+    margin-bottom: 1rem;
+  }
+  
+  .password-input-group {
+    position: relative;
+  }
+  
+  .password-input-icon {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .password-input {
+    border-left: none;
+    border-radius: 0;
+  }
+  
+  .password-toggle-btn {
+    border: 1px solid #ced4da;
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .password-toggle-btn:hover {
+    background-color: #e9ecef;
+  }
+  
+  .signup-link {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .signup-link:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+  }
+  
+  .w-100 {
+    width: 100%;
+  }
+  
+  .mb-3 {
+    margin-bottom: 1rem;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .signin-container {
+      padding: 0.5rem;
+    }
+    
+    .signin-card {
+      margin: 0;
+    }
+    
+    .custom-card-header,
+    .custom-card-content,
+    .custom-card-footer {
+      padding: 1rem;
+    }
+  }
+  
+  /* Bootstrap Alert overrides */
+  .alert {
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+  }
+  
+  .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+  
+  /* Input Group styling */
+  .input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+  }
+  
+  .input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #6c757d;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+  }
+  
+  .input-group > .form-control {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+  }
+  
+  .input-group > .form-control:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  
+  .input-group > .form-control:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  .input-group-text:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  .input-group-text:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }

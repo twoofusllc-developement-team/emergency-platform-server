@@ -1,46 +1,46 @@
-import logo from './logo.svg';
 import './App.css';
 import Services from './components/Services/Services';
 import Header from './components/Header/Header';
 import Contact from './components/Contact/Contact';
 import Footer from './components/Footer/Footer';
 import Booking from './pages/Booking';
+import Signup from './pages/signup/Signup.component'
+import Signin from './pages/signin/Signin.component'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from 'react-helmet-async';
+import { ToastProvider } from './components/ui/toast/toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import NotFound from "./pages/notFound/notFound";
+
 function App() {
-//  
+  const queryClient = new QueryClient();
   return (
-    <Router>
-    <div className="App">
-      
-       <Routes>
-        <Route index element={
-          <div>
-          <Header></Header>
-      <Contact></Contact>
-      <Services></Services>
-      
-      <Footer></Footer>
-      </div>
-        }></Route>
-        <Route path="/booking" element={<Booking />} />
-        
-      </Routes>
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
-    </div>
-    </Router>
+    <>
+      <ToastProvider>
+        <HelmetProvider>
+          <QueryClientProvider client={queryClient}>
+            <Router>
+              <div className="App">
+                <Routes>
+                  <Route index element={
+                    <div>
+                      <Header></Header>
+                      <Contact></Contact>
+                      <Services></Services>
+                      <Footer></Footer>
+                    </div>
+                  }></Route>
+                  <Route path="/booking" element={<Booking />} />
+                  <Route path="/auth/signup" element={<Signup/>} />
+                  <Route path="/auth/login" element={<Signin/>} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+            </Router>
+          </QueryClientProvider>
+        </HelmetProvider>
+      </ToastProvider>
+    </>
   );
 }
 
